@@ -19,18 +19,23 @@ const connection = mysql.createConnection({
 const start = () => {
   inquirer
     .prompt({
-      name: 'addORviewORupdate',
-      type: 'list',
-      message: 'Would you like to add a [ADD] or [VIEW] or [UPDATE] the employee information?',
-      choices: ['ADD', 'VIEW', 'UPDATE'],
+      name: 'action',
+      type: 'rawlist',
+      message: 'What would you like to do?',
+      choices: [
+        'Add', 
+        'View',
+        'Update'
+      ],
     })
+
     .then((answer) => {
       // based on their answer, either call the bid or the post functions
-      if (answer.addORviewORupdated === 'ADD') {
+      if (answer.action === 'Add') {
         addData();
-      } else if (answer.addORviewORupdated === 'VIEW') {
+      } else if (answer.action === 'View') {
         viewdData();
-      } else if (answer.addORviewORupdated === 'UPDATE') {
+      } else if (answer.action === 'Update') {
         updateEmployee();
       } else {
         connection.end();
@@ -44,30 +49,29 @@ const addData = () => {
   //START HERE
   inquirer
     .prompt({
-      
         name: 'add',
         type: 'list',
-        message: 'Would you like to a [DEPARTMENT] or a [ROLE]?',
+        message: 'Would you like to add a deparrtment or an employee role?',
         choices: ['DEPARTMENT', 'ROLE'],
       })
       .then((answer) => {
         // based on their answer, either call the bid or the post functions
         if (answer.add === 'DEPARTMENT') {
           addDepartment();
-        } else if (answer.A === 'ROLE') {
+        } else if (answer.add === 'ROLE') {
           addRole();
         } else {
-          connection.end();
+          start();
         }
       });
   };
-      
-      {
-        name: 'category',
+  inquirer
+  .prompt({   
+        name: 'department',
         type: 'input',
-        message: 'What category would you like to place your auction in?',
-      },
-      {
+        message: 'What is the department name?'
+      });
+    /*  {
         name: 'startingBid',
         type: 'input',
         message: 'What would you like your starting bid to be?',
@@ -89,19 +93,19 @@ const addData = () => {
     });
 };
 
-/*const runSearch = () => {
+/*const start = () => {
   inquirer
     .prompt({
       name: 'action',
-      type: 'rawlist',
+      type: 'list',
       message: 'What would you like to do?',
       choices: [
-        'Add departments',
-        'Add roles',
-        'Add employees',
-        'View departments',
-        'View roles',
-        'View employees',
+        'Add a new department',
+        'Add a new employee role',
+        'Add a new employee',
+        'View all departments',
+        'View all employees',
+        'View all roles',
         'Update employee roles',
       ],
     })
@@ -141,74 +145,94 @@ const addData = () => {
       }
     });
 };
-*/
-// function to handle posting new items up for auction
-const postAuction = () => {
-  // prompt for info about the item being put up for auction
-  inquirer
-    .prompt([
-      {
-        name: 'item',
-        type: 'input',
-        message: 'What is the item you would like to submit?',
-      },
-      {
-        name: 'category',
-        type: 'input',
-        message: 'What category would you like to place your auction in?',
-      },
-      {
-        name: 'startingBid',
-        type: 'input',
-        message: 'What would you like your starting bid to be?',
-        validate(value) {
-          if (isNaN(value) === false) {
-            return true;
-          }
-          return false;
-        },
-      },
-    ])
-    //get the input answers and 
-    .then((answer) => {
-      console.log(answer);
-      // when finished prompting, insert a new item into the db with that info
-      //Todo insert into the db
-      createProduct(answer.item, answer.category, answer.starting_bid, answer.highest_bid)
 
-    });
-};
-/*const artistSearch = () => {
+// function to handle add new dept
+const departmentAdd = () => {
+  // prompt for department
   inquirer
     .prompt({
-      name: 'artist',
-      type: 'input',
-      message: 'What artist would you like to search for?',
-    })
-    .then((answer) => {
-      const query = 'SELECT position, song, year FROM top5000 WHERE ?';
-      connection.query(query, { artist: answer.artist }, (err, res) => {
-        res.forEach(({ position, song, year }) => {
-          console.log(
-            `Position: ${position} || Song: ${song} || Year: ${year}`
+        name: 'deptName',
+        type: 'input',
+        message: 'What is the new department name?',
+      })
+      .then((answer) => {            
+        // when finished prompting, insert a new department into the db 
+        connection.query(
+          'INSERT INTO department SET ?', 
+          {deptName: answer.deptName},
+               
+          (err,res) => {
+            if (err) throw err;
+            console.log('The new department has been added successfully!');
+            //  re-prompt the user for new action
+            start();
+          }
+        );
+      });
+  };
+      
+  const roleAdd = () => {
+    // prompt for role
+    inquirer
+      .prompt({
+          name: 'roleTitle',
+          type: 'input',
+          message: 'What is the new employee role title?',
+        })
+        .then((answer) => {
+          // when finished prompting, insert a new role into the db 
+          connection.query(
+            'INSERT INTO role SET ?',
+            
+            {
+              role_title: answer.role,
+              role_salary: answer.role,
+              role_department: answer.role,
+                        
+            },
+            (err) => {
+              if (err) throw err;
+              console.log('The new employee role has been added successfully!');
+              // re-prompt the user for new action
+              start();
+            }
           );
         });
-        runSearch();
-      });
-    });
-};
+    }; 
+    
+    const employeeAdd = () => {
+      // prompt for employee
+      inquirer
+        .prompt({
+            name: 'employee',
+            type: 'input',
+            message: 'What is the new employee name?',
+          })
+          .then((answer) => {
+            // when finished prompting, insert a new employeeinto the db 
+            connection.query(
+              'INSERT INTO employee SET ?',
+              
+              {
+                employee_first_name: answer.employee,
+                employee_last_name: answer.employee,
+                employee_role_id: answer.employee,
+                employee_manager_id: answer.employee,
+                                    
+              },
+              (err) => {
+                if (err) throw err;
+                console.log('The new employee name has been added successfully!');
+                // re-prompt the user for if they want to bid or post
+                start();
+              }
+            );
+          });
+      };     
 
-const multiSearch = () => {
-  const query =
-    'SELECT artist FROM top5000 GROUP BY artist HAVING count(*) > 1';
-  connection.query(query, (err, res) => {
-    res.forEach(({ artist }) => console.log(artist));
-    runSearch();
-  });
-};
-*/
+      */
 // connect to the mysql server and sql database
 connection.connect((err) => {
   if (err) throw err;
-  add();
+  start();
 });
