@@ -109,6 +109,12 @@ const addData = () => {
             name: 'dept',
             type: 'input',
             message: 'What is the role department ID?',
+            validate(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+          },
           },
             
         ])
@@ -150,11 +156,24 @@ const addData = () => {
               name: 'roleId',
               type: 'input',
               message: 'What is the employee role ID',
+              validate: (value) => {
+                if (isNaN(value) === false) {
+                  return true;
+                }
+                return false;
+              },
             },
             {
              name: 'managerId',
              type: 'input',
              message: 'What is the employee manager ID?',
+             validate: (value) => {
+              if (isNaN(value) === false) {
+                return true;
+              }
+              return false;
+            },
+          }
             },
                   
           ])
