@@ -48,11 +48,11 @@ VALUES ("Sales Lead", 100000.00, 1), ("Salesperson",80000.00, 1 ), ("Lead Engine
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("Carolyn", "Thorton" 1, 1), ("Roberto", "Garcia", 2, 1), ("Kevin", "Gracenette", 3, 2),("Beverly", "Jenkinson", 4, 2), ("Kellie", "Rashad", 5, 3), ("Mateos", "Sortingford", 4, 1), ("Sherrelle", "Harrington", 4, 2);
 
-SELECT department_id
+SELECT department_id, name, title, salary
 FROM department
 INNER JOIN role on department.id = role.department_id;
 
-SELECT role_id
+SELECT role_id, title, salary, department_id, first_name, last_name, manager_id
 FROM role
 INNER JOIN employee on role.id = employee.role_id;
 
