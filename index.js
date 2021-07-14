@@ -25,7 +25,7 @@ const start = () => {
       choices: [
         'Add', 
         'View',
-        'Update'
+        'Update',
       ],
     })
 
@@ -51,8 +51,8 @@ const addData = () => {
     .prompt({
         name: 'add',
         type: 'list',
-        message: 'Would you like to add a deparrtment or an employee role?',
-        choices: ['DEPARTMENT', 'ROLE'],
+        message: 'Would you like to add a department or an employee role?',
+        choices: ['DEPARTMENT', 'ROLE', 'EMPLOYEE'],
       })
       .then((answer) => {
         // based on their answer, either call the bid or the post functions
@@ -60,17 +60,133 @@ const addData = () => {
           addDepartment();
         } else if (answer.add === 'ROLE') {
           addRole();
+        } else if (answer.add === 'EMPLOYEE') {
+          addEmployee();
         } else {
           start();
         }
       });
   };
-  inquirer
+  const addDepartment =() => {
+   // prompt for department
+   inquirer
+   .prompt({
+       name: 'deptName',
+       type: 'input',
+       message: 'What is the new department name?',
+     })
+     .then((answer) => {            
+       // when finished prompting, insert a new department into the db 
+       connection.query(
+         'INSERT INTO department SET ?', 
+         {name: answer.deptName},
+              
+         (err,res) => {
+           if (err) throw err;
+           console.log('The new department has been added successfully!');
+           //  re-prompt the user for new action
+           start();
+         }
+       );
+     });
+    };
+
+    const addRole = () => {
+      // prompt for role
+      inquirer
+        .prompt([
+          {
+          name: 'title',
+          type: 'input',
+          message: 'What is the employee role?',
+          },
+          {
+          name: 'salary',
+            type: 'input',
+            message: 'What is the role salary',
+          },
+          {
+            name: 'dept',
+            type: 'input',
+            message: 'What is the role department ID?',
+          },
+            
+        ])
+          .then((answer) => {
+            // when finished prompting, insert a new role into the db 
+            connection.query(
+              'INSERT INTO role SET ?',
+              {
+                title: answer.title,
+                salary: answer.salary,
+                department_id: answer.dept,                     
+              },
+           
+              (err) => {
+                if (err) throw err;
+                console.log('The new employee role has been added successfully!');
+                // re-prompt the user for new action
+                start();
+              }
+            );
+          });
+      }; 
+
+      const addEmployee = () => {
+        // prompt for employee
+        inquirer
+          .prompt([
+            {
+              name: 'firstName',
+              type: 'input',
+              message: 'What is the first name of the employee?',
+            },
+            {
+              name: 'lastName',
+              type: 'input',
+              message: 'What is the last name of the employee?',
+            },
+            {
+              name: 'roleId',
+              type: 'input',
+              message: 'What is the employee role ID',
+            },
+            {
+             name: 'managerId',
+             type: 'input',
+             message: 'What is the employee manager ID?',
+            },
+                  
+          ])
+            .then((answer) => {
+              // when finished prompting, insert a new employeeinto the db 
+              connection.query(
+                'INSERT INTO employee SET ?',
+                
+                {
+                  first_name: answer.firstName,
+                  last_name: answer.lastName,
+                  role_id: answer.roleId,
+                  manager_id: answer.managerId,
+                                      
+                },
+                (err) => {
+                  if (err) throw err;
+                  console.log('The new employee name has been added successfully!');
+                  // re-prompt the user for if they want to bid or post
+                  start();
+                }
+              );
+            });
+        };     
+      
+ /* inquirer
   .prompt({   
         name: 'department',
         type: 'input',
         message: 'What is the department name?'
       });
+      */
     /*  {
         name: 'startingBid',
         type: 'input',
@@ -146,89 +262,10 @@ const addData = () => {
     });
 };
 
-// function to handle add new dept
-const departmentAdd = () => {
-  // prompt for department
-  inquirer
-    .prompt({
-        name: 'deptName',
-        type: 'input',
-        message: 'What is the new department name?',
-      })
-      .then((answer) => {            
-        // when finished prompting, insert a new department into the db 
-        connection.query(
-          'INSERT INTO department SET ?', 
-          {deptName: answer.deptName},
-               
-          (err,res) => {
-            if (err) throw err;
-            console.log('The new department has been added successfully!');
-            //  re-prompt the user for new action
-            start();
-          }
-        );
-      });
-  };
+
       
-  const roleAdd = () => {
-    // prompt for role
-    inquirer
-      .prompt({
-          name: 'roleTitle',
-          type: 'input',
-          message: 'What is the new employee role title?',
-        })
-        .then((answer) => {
-          // when finished prompting, insert a new role into the db 
-          connection.query(
-            'INSERT INTO role SET ?',
-            
-            {
-              role_title: answer.role,
-              role_salary: answer.role,
-              role_department: answer.role,
-                        
-            },
-            (err) => {
-              if (err) throw err;
-              console.log('The new employee role has been added successfully!');
-              // re-prompt the user for new action
-              start();
-            }
-          );
-        });
-    }; 
+  
     
-    const employeeAdd = () => {
-      // prompt for employee
-      inquirer
-        .prompt({
-            name: 'employee',
-            type: 'input',
-            message: 'What is the new employee name?',
-          })
-          .then((answer) => {
-            // when finished prompting, insert a new employeeinto the db 
-            connection.query(
-              'INSERT INTO employee SET ?',
-              
-              {
-                employee_first_name: answer.employee,
-                employee_last_name: answer.employee,
-                employee_role_id: answer.employee,
-                employee_manager_id: answer.employee,
-                                    
-              },
-              (err) => {
-                if (err) throw err;
-                console.log('The new employee name has been added successfully!');
-                // re-prompt the user for if they want to bid or post
-                start();
-              }
-            );
-          });
-      };     
 
       */
 // connect to the mysql server and sql database
