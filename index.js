@@ -61,27 +61,27 @@ const start = () => {
   })
   .then((answer) => {
     switch (answer.action) {
-      case 'Add a department':
+      case 'Add a new department':
         addDepartment();
         break;
   
-      case 'Add a role':
+      case 'Add a new employee role':
         addRole();
         break;
   
-      case 'Add an employee':
+      case 'Add a new employee':
        addEmployee();
         break;
   
-        case 'View departments':
-        departmentView();
+        case 'View all departments':
+        viewDepartment();
         break;
   
-      case 'View roles':
+      case 'View all roles':
         viewRole();
         break;
   
-      case 'View employees':
+      case 'View all employees':
         viewEmployee();
         break;
   
@@ -127,6 +127,7 @@ const addDepartment = () => {
       name: 'deptName',
       type: 'input',
       message: 'What is the new department name?',
+      validate: (value) => { if (value) { return true } else { return 'a value must be entered to continue' } }
     })
     .then((answer) => {
       // when finished prompting, insert a new department into the db 
@@ -152,11 +153,18 @@ const addRole = () => {
         name: 'title',
         type: 'input',
         message: 'What is the employee role?',
+        validate: (value) => { if (value) { return true } else { return 'a value must be entered to continue' } }
       },
       {
         name: 'salary',
         type: 'input',
         message: 'What is the role salary',
+        validate(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          return false;
+        },
       },
       {
         name: 'dept',
@@ -252,7 +260,7 @@ const addEmployee = () => {
 };
 
 // function to handle posting new items up for auction
-const viewData = () => {
+/*const viewData = () => {
   // prompt for info about the item being put up for auction
   //START HERE
   inquirer
@@ -277,26 +285,28 @@ const viewData = () => {
     })
   };
   
-   
-const viewDepartment = () => {
-  inquirer
+  */
+const viewDepartment = (answer) => {
+ /* inquirer
     .prompt({
       name: 'viewDept',
       type: 'input',
       message: 'What department would you like to view?',
     })
     .then((answer) => {
-      const query = 'SELECT * FROM department WHERE ?';
-      connection.query(query, { name: answer.viewDept }, (err, res) => {
+  */    
+      const query = 'SELECT * FROM department';
+      connection.query(query, (err, res) => {
+     // connection.query(query, { name: answer.viewDept }, (err, res) => {
         if (err) throw err;
-        res.forEach(({ name }) => {
-          console.log(
-            `Department: ${name}`
-          );
+        res.forEach(({ name }) => console.log(name));
+      //      `Department: ${name}`
+       //   );
+          viewData();
         });
-        viewData();
-      });
-    });
+     
+   //   });
+  //  });
 };
 
 const viewRole = () => {
@@ -369,6 +379,72 @@ const viewEmployee = () => {
 };
 
 const updateRole = () => {
+  // prompt for role
+  inquirer
+    .prompt([
+      {
+        name: 'newTitle',
+        type: 'input',
+        message: 'What is the employee role you want to update?',
+        choices: ['TITLE', 'SALARY', 'DEPARTMENT_ID'],
+        validate: (value) => { if (value) { return true } else { return 'a value must be entered to continue' } }
+      },
+      {
+        name: 'newSalary',
+        type: 'input',
+        message: 'What is the new role title?',
+        validate(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          return false;
+        },
+      },
+      {
+        name: 'newSalary',
+        type: 'input',
+        message: 'What is the new role title salary?',
+        validate(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          return false;
+        },
+      },
+      {
+        name: 'newDept',
+        type: 'input',
+        message: 'What is the role department ID?',
+        validate(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          return false;
+        },
+      },
+
+    ])
+    .then((answer) => {
+      // when finished prompting, insert a new role into the db 
+      connection.query(
+        'UPDATE auctions SET ? WHERE ?',
+        {
+          title: answer.title,
+          salary: answer.salary,
+          department_id: answer.dept,
+        },
+
+        (err) => {
+          if (err) throw err;
+          console.log('The new employee role has been added successfully!');
+          // re-prompt the user for new action
+          start();
+        }
+      );
+    });
+};
+/*
+const updateRole = () => {
   inquirer
     .prompt({
       name: 'roleUpdate',
@@ -388,7 +464,7 @@ const updateRole = () => {
       });
     });
 };
-
+*/
 
   
 
