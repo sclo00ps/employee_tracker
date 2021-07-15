@@ -54,8 +54,8 @@ const start = () => {
       'Add a new employee role',
       'Add a new employee',
       'View all departments',
-      'View all employees',
       'View all roles',
+      'View all employees',
       'Update employee roles',
     ],
   })
@@ -95,31 +95,7 @@ const start = () => {
     }
   });
   };
-/*
-const addData = () => {
-  // prompt for info about the item being put up for auction
-  //START HERE
-  inquirer
-    .prompt({
-      name: 'add',
-      type: 'list',
-      message: 'Would you like to add a department or an employee role?',
-      choices: ['DEPARTMENT', 'ROLE', 'EMPLOYEE'],
-    })
-    .then((answer) => {
-      // based on their answer, either call the bid or the post functions
-      if (answer.add === 'DEPARTMENT') {
-        addDepartment();
-      } else if (answer.add === 'ROLE') {
-        addRole();
-      } else if (answer.add === 'EMPLOYEE') {
-        addEmployee();
-      } else {
-        start();
-      }
-    });
-};
-*/
+
 const addDepartment = () => {
   // prompt for department
   inquirer
@@ -259,191 +235,38 @@ const addEmployee = () => {
     });
 };
 
-// function to handle posting new items up for auction
-/*const viewData = () => {
-  // prompt for info about the item being put up for auction
-  //START HERE
-  inquirer
-    .prompt({
-      name: 'view',
-      type: 'list',
-      message: 'What would you like to view?',
-      choices: ['DEPARTMENT', 'ROLE', 'EMPLOYEE'],
-    })
-     
-    .then((answer) => {
-      // based on their answer, either call the bid or the post functions
-        if (answer.view === 'DEPARTMENT') {
-        viewDepartment();
-      } else if (answer.view === 'ROLE') {
-        viewRole();
-      } else if (answer.view === 'EMPLOYEE') {
-        viewEmployee();
-      } else {
-        start();
-      };
-    })
-  };
-  
-  */
 const viewDepartment = (answer) => {
- /* inquirer
-    .prompt({
-      name: 'viewDept',
-      type: 'input',
-      message: 'What department would you like to view?',
-    })
-    .then((answer) => {
-  */    
-      const query = 'SELECT * FROM department';
+ 
+  const query = 'SELECT * FROM department';
       connection.query(query, (err, res) => {
      // connection.query(query, { name: answer.viewDept }, (err, res) => {
         if (err) throw err;
         res.forEach(({ name }) => console.log(name));
-      //      `Department: ${name}`
-       //   );
-          viewData();
+       start();
         });
-     
-   //   });
-  //  });
-};
+  };
 
-const viewRole = () => {
-  inquirer
-    .prompt({
-      name: 'roleView',
-      type: 'input',
-      message: 'What role would you like to view?',
-    })
-    .then((answer) => {
-      console.log(`You want to view "${answer.roleView}"`);
-      connection.query(
-        'SELECT title FROM role WHERE ?',
-        { title: answer.roleView },
-        (err, res) => {
+  const viewRole = (answer) => {
+     const query = 'SELECT * FROM role';
+        connection.query(query, (err, res) => {
+       // connection.query(query, { name: answer.viewDept }, (err, res) => {
           if (err) throw err;
-          if (res[0]) {
-            console.log(
-          `Title: ${res[0].title} || Salary: ${res[0].salary} || Department ID: ${res[0].department_id}`
-         // `Title: ${res.title} || Salary: ${res.salary} || Department ID: ${res.department_id}`
-            );
-            viewData();
-          } else {
-            console.error('Role not found :(\n');
-            viewData();
-          }
-        }
-      );
-    });
-};
-
-const viewEmployee = () => {
-  inquirer
-    .prompt([
-    {
-      name: 'empFirst',
-      type: 'input',
-      message: 'What the first name of the employee you would like to view?',
-    },
-    {
-      name: 'empLast',
-      type: 'input',
-      message: 'What is the last name of the employee?',
-    },
-    
-    ])
-    
-    .then((answer) => {
-      console.log(`You want to view "${answer.empFirst} ${answer.empLast}"`);
-      connection.query(
-        'SELECT * FROM employee WHERE ?',
-        { first_name: answer.empFirst,
-          last_name: answer.empLast,
-        },
-        (err, res) => {
-          if (err) throw err;
-          if (res[0]) {
-            console.log(
-             `"First Name": ${res[0].first_name} || "Last Name": ${res[0].last_name} || "Role ID": ${res[0].role_id} || "Manager ID": ${res[0].manager_id}`
-           // `Title: ${res.title} || Salary: ${res.salary} || Department ID: ${res.department_id}`
-            );
-            viewData();
-          } else {
-            console.error('Employee not found :(\n');
-            viewData();
-          }
-        }
-      );
-    });
-};
-
-const updateRole = () => {
-  // prompt for role
-  inquirer
-    .prompt([
-      {
-        name: 'newTitle',
-        type: 'input',
-        message: 'What is the employee role you want to update?',
-        choices: ['TITLE', 'SALARY', 'DEPARTMENT_ID'],
-        validate: (value) => { if (value) { return true } else { return 'a value must be entered to continue' } }
-      },
-      {
-        name: 'newSalary',
-        type: 'input',
-        message: 'What is the new role title?',
-        validate(value) {
-          if (isNaN(value) === false) {
-            return true;
-          }
-          return false;
-        },
-      },
-      {
-        name: 'newSalary',
-        type: 'input',
-        message: 'What is the new role title salary?',
-        validate(value) {
-          if (isNaN(value) === false) {
-            return true;
-          }
-          return false;
-        },
-      },
-      {
-        name: 'newDept',
-        type: 'input',
-        message: 'What is the role department ID?',
-        validate(value) {
-          if (isNaN(value) === false) {
-            return true;
-          }
-          return false;
-        },
-      },
-
-    ])
-    .then((answer) => {
-      // when finished prompting, insert a new role into the db 
-      connection.query(
-        'UPDATE auctions SET ? WHERE ?',
-        {
-          title: answer.title,
-          salary: answer.salary,
-          department_id: answer.dept,
-        },
-
-        (err) => {
-          if (err) throw err;
-          console.log('The new employee role has been added successfully!');
-          // re-prompt the user for new action
+          res.forEach(({ title }) => console.log(title));
           start();
-        }
-      );
-    });
-};
-/*
+          });
+    };
+
+  const viewEmployee = (answer) => {
+    const query = 'SELECT * FROM employee';
+         connection.query(query, (err, res) => {
+        // connection.query(query, { name: answer.viewDept }, (err, res) => {
+           if (err) throw err;
+           res.forEach(({first_name, last_name}) => console.log(first_name, last_name));
+           start();
+           });
+     };
+
+
 const updateRole = () => {
   inquirer
     .prompt({
@@ -460,16 +283,10 @@ const updateRole = () => {
             `Role: ${title}`
           );
         });
-        viewData();
+        start();
       });
     });
 };
-*/
-
-  
-
-
-
   
 // connect to the mysql server and sql database
 connection.connect((err) => {
