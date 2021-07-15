@@ -270,17 +270,17 @@ const viewDepartment = (answer) => {
 const updateRole = () => {
   inquirer
     .prompt({
-      name: 'roleUpdate',
+      name: 'roleIdUp',
       type: 'input',
-      message: 'What employee role would you like to update?',
+      message: 'What employee role ID would you like to update?',
     })
     .then((answer) => {
-      const query = 'UPDATE auctions SET ? WHERE ?';
-      connection.query(query, { title: answer.roleupdate }, (err, res) => {
+      const query = 'UPDATE employee SET role_id WHERE ?';
+      connection.query(query, [answer, answer], (err, res) => {
         if (err) throw err;
-        res.forEach(({ title }) => {
+        res.forEach(({ role_id }) => {
           console.log(
-            `Role: ${title}`
+            `Role: ${role_id}`
           );
         });
         start();
