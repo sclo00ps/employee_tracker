@@ -15,7 +15,7 @@ const connection = mysql.createConnection({
   database: 'employee_trackerDB',
 });
 
-
+/*
 const start = () => {
   inquirer
     .prompt({
@@ -42,6 +42,60 @@ const start = () => {
       }
     });
 };
+*/
+const start = () => {
+  inquirer
+  .prompt({
+    name: 'action',
+    type: 'list',
+    message: 'What would you like to do?',
+    choices: [
+      'Add a new department',
+      'Add a new employee role',
+      'Add a new employee',
+      'View all departments',
+      'View all employees',
+      'View all roles',
+      'Update employee roles',
+    ],
+  })
+  .then((answer) => {
+    switch (answer.action) {
+      case 'Add a department':
+        addDepartment();
+        break;
+  
+      case 'Add a role':
+        addRole();
+        break;
+  
+      case 'Add an employee':
+       addEmployee();
+        break;
+  
+        case 'View departments':
+        departmentView();
+        break;
+  
+      case 'View roles':
+        viewRole();
+        break;
+  
+      case 'View employees':
+        viewEmployee();
+        break;
+  
+      case 'Update employee roles':
+        updateRole();
+        break;
+     
+      default:
+        console.log(`Invalid action: ${answer.action}`);
+        break;
+    }
+  });
+  };
+/*
 const addData = () => {
   // prompt for info about the item being put up for auction
   //START HERE
@@ -65,6 +119,7 @@ const addData = () => {
       }
     });
 };
+*/
 const addDepartment = () => {
   // prompt for department
   inquirer
