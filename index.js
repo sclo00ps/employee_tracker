@@ -275,7 +275,8 @@ const updateRole = () => {
       message: 'What employee role ID would you like to update?',
     })
     .then((answer) => {
-      const query = 'UPDATE employee SET role_id WHERE ?';
+     // const query = 'UPDATE employee SET role_id WHERE ?';
+     const query = 'UPDATE employee SET role_id = role.id WHERE ? ';
       connection.query(query, [answer, answer], (err, res) => {
         if (err) throw err;
         res.forEach(({ role_id }) => {
