@@ -266,18 +266,41 @@ const viewDepartment = (answer) => {
            });
      };
 
+// see pg 4/5 in 6/14/21 file for sample code select and then update
+
 
 const updateRole = () => {
+  connection.query('SELECT * FROM employee', (err, results) => {
+    if (err) throw err;
+    //// once you have the role_ids, prompt the user for which they'd like to change
   inquirer
     .prompt({
       name: 'roleIdUp',
       type: 'input',
+      choices () {
+        const roleIdUpArray = [];
+        results.forEach(({ role_id }) => {
+          roleIdUpArray.push(role_id);
+        });
+        return // once you have the items, prompt the user for which they'd like to bid onArray;
+      },
       message: 'What employee role ID would you like to update?',
     })
+
     .then((answer) => {
      // const query = 'UPDATE employee SET role_id WHERE ?';
-     const query = 'UPDATE employee SET role_id = role.id WHERE ? ';
-      connection.query(query, [answer, answer], (err, res) => {
+     let chosenRole;
+     results.forEach((role_id) => {
+      if (employee.role_id === answer.roleIdUp) {
+        chosenRole = role_id;
+      }
+    });
+
+
+
+    
+   /*  const query = 'UPDATE employee SET role_id WHERE ? ';
+      connection.query(query, [answer.role_id, answer.id], (err, res) => {
         if (err) throw err;
         res.forEach(({ role_id }) => {
           console.log(
@@ -287,8 +310,35 @@ const updateRole = () => {
         start();
       });
     });
+ // }
+*/
+if (chosenRole.role_id === (answer.role_id)) {
+  // bid was high enough, so update db, let the user know, and start over
+  connection.query(
+    'UPDATE employee SET ? WHERE ?',
+    [
+      {
+        new_role: answer.role_id,
+      },
+      {
+        id: chosenRole.role_id,
+      },
+    ],
+    (error) => {
+      if (error) throw err;
+      console.log('Role updated successfully!');
+      start();
+    }
+  );
+} else {
+  // bid wasn't high enough, so apologize and start over
+  console.log('The role was not updated.');
+  start();
+}
+});
+});
 };
-  
+
 // connect to the mysql server and sql database
 connection.connect((err) => {
   if (err) throw err;
