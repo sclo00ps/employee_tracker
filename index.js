@@ -15,34 +15,7 @@ const connection = mysql.createConnection({
   database: 'employee_trackerDB',
 });
 
-/*
-const start = () => {
-  inquirer
-    .prompt({
-      name: 'action',
-      type: 'rawlist',
-      message: 'What would you like to do?',
-      choices: [
-        'Add',
-        'View',
-        'Update',
-      ],
-    })
-
-    .then((answer) => {
-      // based on their answer, either call the bid or the post functions
-      if (answer.action === 'Add') {
-        addData();
-      } else if (answer.action === 'View') {
-        viewData();
-      } else if (answer.action === 'Update') {
-        updateRole();
-      } else {
-        connection.end();
-      }
-    });
-};
-*/
+//start displays all actions user can select
 const start = () => {
   inquirer
   .prompt({
@@ -95,7 +68,7 @@ const start = () => {
     }
   });
   };
-
+//add new department 
 const addDepartment = () => {
   // prompt for department
   inquirer
@@ -121,6 +94,7 @@ const addDepartment = () => {
     });
 };
 
+//add new role 
 const addRole = () => {
   // prompt for role
   inquirer
@@ -175,6 +149,7 @@ const addRole = () => {
     });
 };
 
+////add new employee
 const addEmployee = () => {
   // prompt for employee
   inquirer
@@ -235,6 +210,7 @@ const addEmployee = () => {
     });
 };
 
+//view all departments
 const viewDepartment = (answer) => {
  
   const query = 'SELECT * FROM department';
@@ -255,7 +231,7 @@ const viewDepartment = (answer) => {
           start();
           });
     };
-
+//view all employees
   const viewEmployee = (answer) => {
     const query = 'SELECT * FROM employee';
          connection.query(query, (err, res) => {
@@ -268,7 +244,7 @@ const viewDepartment = (answer) => {
 
 // see pg 4/5 in 6/14/21 file for sample code select and then update
 
-
+//update employee id
 const updateRole = () => {
   connection.query('SELECT * FROM employee', (err, results) => {
     if (err) throw err;
@@ -282,7 +258,7 @@ const updateRole = () => {
         results.forEach(({ role_id }) => {
           roleIdUpArray.push(role_id);
         });
-        return // once you have the items, prompt the user for which they'd like to bid onArray;
+        return 
       },
       message: 'What employee role ID would you like to update?',
     })
@@ -296,24 +272,10 @@ const updateRole = () => {
       }
     });
 
-
-
     
-   /*  const query = 'UPDATE employee SET role_id WHERE ? ';
-      connection.query(query, [answer.role_id, answer.id], (err, res) => {
-        if (err) throw err;
-        res.forEach(({ role_id }) => {
-          console.log(
-            `Role: ${role_id}`
-          );
-        });
-        start();
-      });
-    });
- // }
-*/
+ //update the chosen role_id 
 if (chosenRole.role_id === (answer.role_id)) {
-  // bid was high enough, so update db, let the user know, and start over
+  
   connection.query(
     'UPDATE employee SET ? WHERE ?',
     [
@@ -331,7 +293,7 @@ if (chosenRole.role_id === (answer.role_id)) {
     }
   );
 } else {
-  // bid wasn't high enough, so apologize and start over
+  // if role not updated vstart over
   console.log('The role was not updated.');
   start();
 }
